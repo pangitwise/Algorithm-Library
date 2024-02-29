@@ -12,12 +12,23 @@ function makeConvexHull(point) {
         var pass = searchConvexHull(convexHull, tmp);
         if (!pass) i--;
     }
-    // 아래 껍질 재참조 금지 
-    var last = convexHull[convexHull.length-1].join(' ');
-    if (last === point[point.length-2].join(' ')) ban = true;
+    // 아래 껍질 재참조 금지: 벡터곱이 0일 경우
+    var [x1, y1] = convexHull[convexHull.length-1];
+    var [x2, y2] = tmp[0];
+    var lastVector = [x2-x1, y2-y1];
+    var ban = true;
     // 위 껍질
     for (var i = point.length-1; i > -1; i--) {
-        if (ban && i === point.length-2) continue;
+        if (ban && i < point.length-1) {
+            var [x2, y2] = tmp[0];
+            var [x3, y3] = points[i];
+            var thisVector = [x3-x2, y3-y2];
+            if (vectorCCW(lastVector, thisVector) === 0) {
+                continue;
+            } else {
+                ban = false;
+            }
+        }
         if (i === point.length-1 || i === 0 || point[i][0] < point[i+1][0]) tmp.push(point[i]);
         var pass = searchConvexHull(convexHull, tmp);
         if (!pass) i++;
