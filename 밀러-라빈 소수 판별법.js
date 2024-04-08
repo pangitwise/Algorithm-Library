@@ -30,12 +30,12 @@ function miller_rabin(a, N) {
     while (Number.isInteger(d/2)) {
         d /= 2;
     }
-    // 2^d ≡ 1 or -1 (N N) 이면 강한 소수 (d는 홀수)
+    // 2^d ≡ 1 or -1 (mod N) 이면 강한 소수 (d는 홀수)
     var value = power(a, d, N);
     if (value === 1 || value === N-1) {
         return true;
     } else {
-        // 2^(2s*d) ≡ -1 (N N)인 경우가 존재하면 강한 소수 (d는 홀수)
+        // 2^(2s*d) ≡ -1 (mod N) 인 경우가 존재하면 강한 소수 (d는 홀수)
         if (N > 94906265) value = BigInt(value);
         while (d <= (N-1)/2) {
             d *= 2;
@@ -50,7 +50,7 @@ function miller_rabin(a, N) {
 }
 
 
-// a의 d제곱 (mod N) 구하기
+// a^d (mod N) 구하기
 function power(a, d, N) {
     var list = [];
     if (N <= 94906265) {
