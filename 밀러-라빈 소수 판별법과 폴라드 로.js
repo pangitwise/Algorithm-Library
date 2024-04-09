@@ -18,12 +18,12 @@ while (base <= limit) {
     base *= 2n;
 }
 
+var ans = [];
 
 // 폴라드 로를 이용한 소인수분해
 function primeFactorization(N) {
     var c = 0n;
     var s = 0;
-    var ans = [];
     while (!isPrime(N)) {
         var pf = pollard_rho(2n+c, N, s)
         if (pf) {
@@ -44,7 +44,6 @@ function primeFactorization(N) {
         }
     }
     ans.push(N);
-    return ans.sort((a,b) => Number(a-b));
 }
 
 
