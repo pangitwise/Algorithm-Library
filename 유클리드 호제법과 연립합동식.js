@@ -48,7 +48,7 @@ function gcd(a, b) {
 
 
 // 확장 유클리드 호제법
-// - ax+by = N 꼴의 문제 풀기
+// - ax+by = N꼴의 문제 풀기
 var x = [];
 var y = [];
 var R = [];
@@ -85,4 +85,56 @@ function EEA(a, b, dep) {
     }
     if (r === 0) return b;
     return EEA(b, r, dep+1);
+}
+
+
+// 중국인의 나머지 정리 - 연립합동식 풀이
+function crt(list_m, list_a) {
+    var L = list_m.length;
+    // 서로소가 아닐 때, 공유하고 있는 최대공약수에 대해 서로 합동이 아니라면 거짓
+    var cop_m = Array.from({length:L}, (v, k) => list_m[k]);
+    var cop_a = Array(L);
+    for (var i = 0; i < L; i++) {
+        for (var j = i+1; j < L; j++) {
+            var thisGCD = gcd(list_m[i], list_m[j]);
+            if (list_a[i]%thisGCD !== list_a[j]%thisGCD) {
+                return false;
+            }
+        }
+    }
+    // 쌍마다 서로소로 만들어주기
+    for (var i = 0; i < L; i++) {
+        for (var j = i+1; j < L; j++) {
+            while (gcd(cop_m[i], cop_m[j]) !== 1) {
+                var gcd_m = gcd(cop_m[i], cop_m[j]);
+                if (gcd(cop_m[i]/gcd_m, cop_m[j]) === 1) {
+                    cop_m[i] /= gcd_m;
+                } else {
+                    cop_m[j] /= gcd_m;
+                }
+            }
+        }
+    }
+    // 확장 유클리드 호제법을 이용한 연립합동식 풀이
+    for (var i = 0; i < L; i++) {
+        cop_a[i] = list_a[i]%cop_m[i];
+    }
+    var M = cop_m.reduce((pre,cur) => BigInt(pre)*BigInt(cur));
+    var sol = 0n;
+    for (var i = 0; i < L; i++) {
+        var tmp_M = Number(M/BigInt(cop_m[i]));
+        if (cop_a[i] !== 0) sol += BigInt(cop_a[i])*BigInt(tmp_M)*BigInt(EEA(tmp_M, cop_m[i], 0));
+    }
+    sol = BigInt(sol);
+    sol = ((sol+M)%M+M)%M;
+    // m이 서로소가 아닐 때, 해를 선형 탐색
+    var bol = false;
+    while (!bol) {
+        bol = true;
+        for (var i = 0; i < L; i++) {
+            if (sol%BigInt(list_m[i]) !== BigInt(list_a[i])) bol = false;
+        }
+        if (!bol) sol += M;
+    }
+    return sol;
 }
