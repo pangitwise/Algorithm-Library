@@ -17,6 +17,7 @@ function fail(P) {
 }
 
 function KMP(A, B) {
+    var cnt = 0;
     var match = 0;
     for (var i = 0; i < A.length; i++) {
         if (A[i] === B[match]) {
@@ -32,8 +33,16 @@ function KMP(A, B) {
             }
         }
         if (match === B.length) {
-            return true;
+            cnt++;
+            match = Math.max(0, K[match-1]);
+            if (match > 0) {
+                i--;
+            } else {
+                if (B.length > 1 && A[i] === B[0]) {
+                    match += 1;
+                }
+            }
         }
     }
-    return false;
+    return cnt;
 }
