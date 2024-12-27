@@ -3,45 +3,33 @@
 
 function fail(P) {
     var j = -1;
-    var K = Array(P.length).fill(-1);
-    for (var i = 1; i < K.length; i++) {
+    var F = Array(P.length).fill(-1);
+    for (var i = 1; i < F.length; i++) {
         j++;
-        K[i] = j;
-        if (P[j] !== P[i]) {
-            while (j !== -1 && P[i] !== P[j]) {
-                j = K[j];
-            }
+        F[i] = j;
+        while (j > -1 && P[i] !== P[j]) {
+            j = F[j];
         }
     }
-    return K;
+    return F;
 }
 
-function KMP(A, B) {
+function KMP(A, B, F) {
     var cnt = 0;
     var match = 0;
     for (var i = 0; i < A.length; i++) {
-        if (A[i] === B[match]) {
-            match += 1;
-        } else {
-            match = Math.max(0, K[match]);
-            if (match > 0) {
-                i--;
-            } else {
-                if (A[i] === B[0]) {
-                    match += 1;
-                }
-            }
-        }
+        var bol = false;
+        A[i] === B[match] ? match++ : bol = true;
         if (match === B.length) {
             cnt++;
-            match = Math.max(0, K[match-1]);
-            if (match > 0) {
-                i--;
-            } else {
-                if (B.length > 1 && A[i] === B[0]) {
-                    match += 1;
-                }
+            match = F[match-1];
+            bol = true;
+        }
+        if (bol) {
+            while (match > -1 && A[i] !== B[match]) {
+                match = F[match];
             }
+            match++;
         }
     }
     return cnt;
